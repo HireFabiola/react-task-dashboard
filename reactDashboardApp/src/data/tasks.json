@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "title": "Setup project repository",
+    "description": "Initialize GitHub repo and push initial React app",
+    "status": "completed",
+    "priority": "high",
+    "dueDate": "2026-04-20"
+  },
+  {
+    "id": "2",
+    "title": "Design task component",
+    "description": "Create reusable TaskCard component with props",
+    "status": "in-progress",
+    "priority": "medium",
+    "dueDate": "2026-04-28"
+  },
+  {
+    "id": "3",
+    "title": "Implement filtering",
+    "description": "Add filter by status (pending, in-progress, completed)",
+    "status": "pending",
+    "priority": "high",
+    "dueDate": "2026-05-02"
+  },
+  {
+    "id": "4",
+    "title": "Write unit tests",
+    "description": "Test Task component rendering and interactions",
+    "status": "pending",
+    "priority": "medium",
+    "dueDate": "2026-05-05"
+  },
+  {
+    "id": "5",
+    "title": "Style the UI",
+    "description": "Apply CSS or Tailwind styling for better UX",
+    "status": "in-progress",
+    "priority": "low",
+    "dueDate": "2026-04-30"
+  },
+  {
+    "id": "6",
+    "title": "Deploy application",
+    "description": "Deploy React app to Vercel or Netlify",
+    "status": "pending",
+    "priority": "high",
+    "dueDate": "2026-05-10"
+  }
+]
