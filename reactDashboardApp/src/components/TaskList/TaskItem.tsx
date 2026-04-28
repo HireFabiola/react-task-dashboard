@@ -5,6 +5,7 @@ import type { TaskStatus } from "../../types";
 export function TaskItem({ task, onDelete, onStatusChange }: TaskItemProps) {
   return (
 
+    
     // Outermost container for whole task item display
     <div className="card mb-3 p-3 bg-dark text-white border-0 shadow-sm">
 
