@@ -17,10 +17,12 @@ export function TaskList() {
     const [filters, setFilters] = useState<Filters>({});
     // Initiliaze visibility state for the form
     const [showForm, setShowForm] = useState<boolean>(false);
-    <p>showForm: {showForm ? "true" : "false"}</p>
+    // Initialize state for search
+    const [searchTask, setSearchTask] = useState<string>("");
+
+
     // Function to add a new task
     const addTask = (newTask: AddedTask) => { setAddedTasks((prevTasks) => [...prevTasks, newTask]); };
-
 
     // Deletes a selected task by creating a new array that excludes the task
     // with the matching id, then updates state with that new array
@@ -82,8 +84,6 @@ export function TaskList() {
     return (
         <>
             <div>
-                <h2>Task List</h2>
-
                 {/* Shows or hides the form */}
                 <button onClick={() => setShowForm((prev) => !prev)}>
                     {showForm ? "Cancel" : "Add Task"}
@@ -106,6 +106,10 @@ export function TaskList() {
                     ))}
                 </ul>
             </div>
+
+            {/* Add seach bar */}
+            <input type="text" placeholder="Search tasks..." value={searchTask} onChange={(e) => setSearchTask(e.target.value)} />
+
             {/* Renders the filter dropdown component and passes down the filter handler */}
             <TaskFilter onFilterChange={handleFilterChange} />
 
