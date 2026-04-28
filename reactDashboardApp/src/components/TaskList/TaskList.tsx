@@ -3,6 +3,7 @@ import tasksData from "../../data/tasks.json";
 import type { Task, AddedTask, TaskStatus } from "../../types/index";
 import { TaskItem } from "../TaskList/TaskItem";
 import { TaskFilter } from "../TaskFilter/TaskFilter";
+import { TaskForm } from "../TaskForm/TaskForm";
 
 // Combined type declaration for the filter state object
 type Filters = { status?: TaskStatus; priority?: "low" | "medium" | "high"; };
@@ -10,16 +11,13 @@ type Filters = { status?: TaskStatus; priority?: "low" | "medium" | "high"; };
 export function TaskList() {
     // Initialize task list state using task data imported from the JSON test file
     const [tasks, setTasks] = useState<Task[]>(tasksData as Task[]);
-
     // Initialize array to store tasks created from the form
     const [addedTasks, setAddedTasks] = useState<AddedTask[]>([]);
-
     // Initialize filter state with no filters selected
     const [filters, setFilters] = useState<Filters>({});
-
     // Initiliaze visibility state for the form
     const [showForm, setShowForm] = useState<boolean>(false);
-
+    <p>showForm: {showForm ? "true" : "false"}</p>
     // Function to add a new task
     const addTask = (newTask: AddedTask) => { setAddedTasks((prevTasks) => [...prevTasks, newTask]); };
 
@@ -83,31 +81,31 @@ export function TaskList() {
 
     return (
         <>
-             <div>
-      <h2>Task List</h2>
+            <div>
+                <h2>Task List</h2>
 
-      {/* Shows or hides the form */}
-      <button onClick={() => setShowForm((prev) => !prev)}>
-        {showForm ? "Cancel" : "Add Task"}
-      </button>
+                {/* Shows or hides the form */}
+                <button onClick={() => setShowForm((prev) => !prev)}>
+                    {showForm ? "Cancel" : "Add Task"}
+                </button>
 
-      {/* Render form only when showForm is true */}
-      {showForm && (
-        <TaskForm
-          onAddTask={addTask}
-          onClose={() => setShowForm(false)}
-        />
-      )}
+                {/* Render form only when showForm is true */}
+                {showForm && (
+                    <TaskForm
+                        onAddTask={addTask}
+                        onClose={() => setShowForm(false)}
+                    />
+                )}
 
-      {/* Display added tasks */}
-      <ul>
-        {addedTasks.map((task, index) => (
-          <li key={`${task.taskNumber}-${index}`}>
-            <strong>{task.title}</strong> — {task.status} ({task.priority})
-          </li>
-        ))}
-      </ul>
-    </div>
+                {/* Display added tasks */}
+                <ul>
+                    {addedTasks.map((task, index) => (
+                        <li key={`${task.taskNumber}-${index}`}>
+                            <strong>{task.title}</strong> — {task.status} ({task.priority})
+                        </li>
+                    ))}
+                </ul>
+            </div>
             {/* Renders the filter dropdown component and passes down the filter handler */}
             <TaskFilter onFilterChange={handleFilterChange} />
 
