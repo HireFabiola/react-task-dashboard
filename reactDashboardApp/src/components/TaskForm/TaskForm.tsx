@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, FormEvent } from "react";
-import type { TaskFormProps, AddedTask } from "../../types";
+import type { TaskFormProps, NewTask } from "../../types";
 
 export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
 
@@ -32,16 +32,8 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
     onClose();
   };
 
-  return (
+    return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="taskNumber"
-        placeholder="Task Number"
-        value={formData.taskNumber}
-        onChange={handleChange}
-      />
-
       <input
         type="text"
         name="title"
@@ -58,27 +50,25 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
         onChange={handleChange}
       />
 
-      <select
-        name="status"
-        value={formData.status}
-        onChange={handleChange}
-      >
-        <option value="">Select Status</option>
+      <select name="status" value={formData.status} onChange={handleChange}>
         <option value="pending">Pending</option>
         <option value="in-progress">In Progress</option>
         <option value="completed">Completed</option>
       </select>
 
-      <select
-        name="priority"
-        value={formData.priority}
-        onChange={handleChange}
-      >
-        <option value="">Select Priority</option>
+      <select name="priority" value={formData.priority} onChange={handleChange}>
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
+
+      <input
+        type="date"
+        name="dueDate"
+        value={formData.dueDate}
+        onChange={handleChange}
+        required
+      />
 
       <button type="submit">Save Task</button>
     </form>

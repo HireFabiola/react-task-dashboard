@@ -1,6 +1,7 @@
 // Types and interfaces for TaskList component
 export type TaskStatus = 'pending' | 'in-progress' | 'completed';
- 
+export type NewTask = Omit<Task, "id">; 
+
 export interface Task {
   id: string;
   title: string;
@@ -28,3 +29,10 @@ export interface TaskFilterProps {
   onFilterChange: (filterName: 
     "status" | "priority", value: string) => void;
 }
+
+// Interface for TaskForm component
+export interface TaskFormProps {
+  onAddTask: (task: NewTask) => void;
+  onClose: () => void;
+}
+

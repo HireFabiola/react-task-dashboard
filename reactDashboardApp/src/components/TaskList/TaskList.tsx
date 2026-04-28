@@ -11,8 +11,6 @@ type Filters = { status?: TaskStatus; priority?: "low" | "medium" | "high"; };
 export function TaskList() {
     // Initialize task list state using task data imported from the JSON test file
     const [tasks, setTasks] = useState<Task[]>(tasksData as Task[]);
-    // Initialize array to store tasks created from the form
-    const [addedTasks, setAddedTasks] = useState<AddedTask[]>([]);
     // Initialize filter state with no filters selected
     const [filters, setFilters] = useState<Filters>({});
     // Initiliaze visibility state for the form
@@ -22,7 +20,14 @@ export function TaskList() {
 
 
     // Function to add a new task
-    const addTask = (newTask: AddedTask) => { setAddedTasks((prevTasks) => [...prevTasks, newTask]); };
+    const addTask = (newTask: Omit<Task, "id">) => {
+        const taskWithId: Task = {
+            ...newTask,
+            id: String(tasks.length + 1),
+        };
+
+        setTasks((prevTasks) => [...prevTasks, taskWithId]);
+    };
 
     // Deletes a selected task by creating a new array that excludes the task
     // with the matching id, then updates state with that new array
@@ -96,15 +101,6 @@ export function TaskList() {
                         onClose={() => setShowForm(false)}
                     />
                 )}
-
-                {/* Display added tasks */}
-                <ul>
-                    {addedTasks.map((task, index) => (
-                        <li key={`${task.taskNumber}-${index}`}>
-                            <strong>{task.title}</strong> — {task.status} ({task.priority})
-                        </li>
-                    ))}
-                </ul>
             </div>
 
             {/* Add seach bar */}
