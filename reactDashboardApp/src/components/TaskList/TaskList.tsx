@@ -1,6 +1,6 @@
 import { useState } from "react";
 import tasksData from "../../data/tasks.json";
-import type { Task, AddedTask, TaskStatus } from "../../types/index";
+import type { Task, TaskStatus } from "../../types/index";
 import { TaskItem } from "../TaskList/TaskItem";
 import { TaskFilter } from "../TaskFilter/TaskFilter";
 import { TaskForm } from "../TaskForm/TaskForm";
@@ -27,20 +27,23 @@ export function TaskList() {
         };
 
         setTasks((prevTasks) => [...prevTasks, taskWithId]);
+        setShowForm(false);
     };
 
     // Deletes a selected task by creating a new array that excludes the task
     // with the matching id, then updates state with that new array
     const handleDelete = (id: string) => {
         setTasks((prevTasks) => {
-            const updatedTasks = prevTasks.filter((task) => {
-                return task.id !== id;
-            });
+            const updatedTasks = prevTasks
+                .filter((task) => task.id !== id)
+                .map((task, index) => ({
+                    ...task,
+                    id: String(index + 1),
+                }));
 
             return updatedTasks;
         });
     };
-
     // Updates the status of a selected task by creating a new array where
     // only the task with the matching id receives the new status
     const handleStatusChange = (id: string, newStatus: TaskStatus) => {
@@ -73,8 +76,16 @@ export function TaskList() {
         });
     };
 
-    // Creates a filtered version of the task list based on the selected filters
+    // Creates a filtered version of the task list based on the selected filters from search and dropdowns
     const filteredTasks = tasks.filter((task) => {
+        const searchText = searchTask.trim().toLowerCase();
+
+        // Search by title (case-insensitive, partial match)
+        const matchesSearch =
+            !searchText || task.title.toLowerCase().includes(searchText);
+
+        if (!matchesSearch) return false;
+
         if (filters.status && task.status !== filters.status) {
             return false;
         }
@@ -104,7 +115,7 @@ export function TaskList() {
             </div>
 
             {/* Add seach bar */}
-            <input type="text" placeholder="Search tasks..." value={searchTask} onChange={(e) => setSearchTask(e.target.value)} />
+            <input type="text" placeholder="Search tasks by title..." value={searchTask} onChange={(e) => setSearchTask(e.target.value)} />
 
             {/* Renders the filter dropdown component and passes down the filter handler */}
             <TaskFilter onFilterChange={handleFilterChange} />
