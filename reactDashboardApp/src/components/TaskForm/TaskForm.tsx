@@ -1,18 +1,15 @@
-import { useState, type ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { TaskFormProps, NewTask } from "../../types";
 
 export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
-
-  // Initialize form field values from the input form
-  const [formData, setFormData] = useState<AddedTask>({
-    taskNumber: "",
+  const [formData, setFormData] = useState<NewTask>({
     title: "",
     description: "",
-    status: "",
-    priority: ""
+    status: "pending",
+    priority: "low",
+    dueDate: "",
   });
 
-  // Updates the correct form field as the user types/selects
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -20,11 +17,10 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  // Sends the form data back to TaskList
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -32,45 +28,75 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
     onClose();
   };
 
-    return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="title"
-        placeholder="Title"
-        value={formData.title}
-        onChange={handleChange}
-        required
-      />
+  return (
+    <form onSubmit={handleSubmit} className="card p-3 mb-4">
+      <div className="mb-3">
+        <label className="form-label">Title</label>
+        <input
+          className="form-control"
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+        />
+      </div>
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleChange}
-      />
+      <div className="mb-3">
+        <label className="form-label">Description</label>
+        <textarea
+          className="form-control"
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+      </div>
 
-      <select name="status" value={formData.status} onChange={handleChange}>
-        <option value="pending">Pending</option>
-        <option value="in-progress">In Progress</option>
-        <option value="completed">Completed</option>
-      </select>
+      <div className="mb-3">
+        <label className="form-label">Status</label>
+        <select
+          className="form-select"
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+        >
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
 
-      <select name="priority" value={formData.priority} onChange={handleChange}>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
+      <div className="mb-3">
+        <label className="form-label">Priority</label>
+        <select
+          className="form-select"
+          name="priority"
+          value={formData.priority}
+          onChange={handleChange}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
 
-      <input
-        type="date"
-        name="dueDate"
-        value={formData.dueDate}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-3">
+        <label className="form-label">Due Date</label>
+        <input
+          className="form-control"
+          type="date"
+          name="dueDate"
+          value={formData.dueDate}
+          onChange={handleChange}
+          required
+        />
+      </div>
 
-      <button type="submit">Save Task</button>
+      <button type="submit" className="btn btn-primary">
+        Save Task
+      </button>
     </form>
   );
 }

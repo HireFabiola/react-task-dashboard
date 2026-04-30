@@ -1,10 +1,5 @@
-import './App.css'
-import { TaskList } from './components/TaskList/TaskList';
+import { Dashboard } from "./components/Dashboard/Dashboard";
 
-function App() {
-  return(
-<TaskList/>
-  )
+export default function App() {
+  return <Dashboard />;
 }
-
-export default App;
