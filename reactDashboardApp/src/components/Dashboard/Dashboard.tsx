@@ -23,6 +23,7 @@ function getDateKey(date: Date) {
 
 function CalendarSection({ tasks }: { tasks: Task[] }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [activeStartDate, setActiveStartDate] = useState(new Date());
   const selectedDateKey = getDateKey(selectedDate);
 
   const taskDateKeys = useMemo(() => {
@@ -36,7 +37,12 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
       <div className="section-title-row">
         <div>
           <p className="section-kicker">Schedule</p>
-          <h2>Calendar</h2>
+          <h2>
+            {activeStartDate.toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
+          </h2>
         </div>
         <span className="section-pill">{selectedTasks.length} due</span>
       </div>
@@ -45,6 +51,9 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
         <Calendar
           onChange={(value) => {
             if (value instanceof Date) setSelectedDate(value);
+          }}
+          onActiveStartDateChange={({ activeStartDate }) => {
+            if (activeStartDate) setActiveStartDate(activeStartDate);
           }}
           value={selectedDate}
           className="task-calendar"
@@ -76,7 +85,7 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
               {selectedTasks.map((task) => (
                 <div key={task.id} className="agenda-item">
                   <strong>{task.title}</strong>
-                  <span>{task.status} · {task.priority}</span>
+                  <span>{task.status} · {task.priority} priority</span>
                 </div>
               ))}
             </div>
@@ -108,9 +117,18 @@ export function Dashboard() {
     setShowForm(false);
   };
 
-  const handleDelete = (id: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-  };
+ const handleDelete = (id: string) => {
+  setTasks((prevTasks) => {
+    const updatedTasks = prevTasks
+      .filter((task) => task.id !== id)
+      .map((task, index) => ({
+        ...task,
+        id: String(index + 1),
+      }));
+
+    return updatedTasks;
+  });
+};
 
   const handleStatusChange = (id: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
@@ -136,6 +154,7 @@ export function Dashboard() {
     const matchesStatus = !filters.status || task.status === filters.status;
     const matchesPriority = !filters.priority || task.priority === filters.priority;
 
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -158,6 +177,44 @@ export function Dashboard() {
     ? Math.round((completedTasks / tasks.length) * 100)
     : 0;
 
+  const completedPercentage = tasks.length
+    ? Math.round((completedTasks / tasks.length) * 100)
+    : 0;
+
+  const inProgressPercentage = tasks.length
+    ? Math.round((inProgressTasks / tasks.length) * 100)
+    : 0;
+
+  const pendingPercentage = tasks.length
+    ? Math.round((pendingTasks / tasks.length) * 100)
+    : 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingTasks = tasks
+    .filter((task) => {
+      const due = new Date(task.dueDate);
+      due.setHours(0, 0, 0, 0);
+      return task.status !== "completed" && due >= today;
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+    );
+
+  const nextDueDate = upcomingTasks[0]?.dueDate;
+
+  const nextDueTasks = nextDueDate
+    ? upcomingTasks.filter((t) => t.dueDate === nextDueDate)
+    : [];
+
+  const daysUntilDue = nextDueDate
+    ? Math.ceil(
+      (new Date(nextDueDate).setHours(0, 0, 0, 0) - today.getTime()) /
+      (1000 * 60 * 60 * 24)
+    )
+    : null;
   return (
     <main className="task-dashboard-page">
       <div className="task-dashboard-shell">
@@ -167,13 +224,6 @@ export function Dashboard() {
             <h1>Task Dashboard</h1>
             <p>Plan work, monitor progress, and review due dates from one clean view.</p>
           </div>
-
-          <button
-            className="btn btn-primary hero-button"
-            onClick={() => setShowForm((prev) => !prev)}
-          >
-            {showForm ? "Close Form" : "Add Task"}
-          </button>
         </header>
 
         <section className="metric-grid">
@@ -189,9 +239,41 @@ export function Dashboard() {
             <span>In Progress</span>
             <strong>{inProgressTasks}</strong>
           </article>
-          <article className="metric-card danger-metric">
+          <article className="metric-card danger-metric hover-summary-card">
             <span>Overdue</span>
             <strong>{overdueTasks}</strong>
+
+            <div className="summary-hover-preview">
+              <strong>Overdue Tasks</strong>
+              {tasks.filter((task) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const dueDate = new Date(task.dueDate);
+                dueDate.setHours(0, 0, 0, 0);
+
+                return task.status !== "completed" && dueDate < today;
+              }).length === 0 ? (
+                <p>No overdue tasks.</p>
+              ) : (
+                tasks
+                  .filter((task) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const dueDate = new Date(task.dueDate);
+                    dueDate.setHours(0, 0, 0, 0);
+
+                    return task.status !== "completed" && dueDate < today;
+                  })
+                  .slice(0, 4)
+                  .map((task) => (
+                    <p key={task.id}>
+                      {task.title} — due {new Date(task.dueDate).toLocaleDateString()}
+                    </p>
+                  ))
+              )}
+            </div>
           </article>
         </section>
 
@@ -202,25 +284,33 @@ export function Dashboard() {
                 <p className="section-kicker">Task list</p>
                 <h2>Current Work</h2>
               </div>
+
               <span className="section-pill">{filteredTasks.length}</span>
             </div>
+            <div className="input-group search-group">
+              <span className="input-group-text">
+                <i className="bi bi-search"></i>
+              </span>
 
-            {showForm && (
-              <div className="task-form-shell">
-                <TaskForm onAddTask={addTask} onClose={() => setShowForm(false)} />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search tasks..."
+                value={searchTask}
+                onChange={(e) => setSearchTask(e.target.value)}
+              />
+            </div>
+            <div className="task-actions-row">
+              <div className="filter-shell">
+                <TaskFilter onFilterChange={handleFilterChange} />
               </div>
-            )}
 
-            <input
-              type="text"
-              className="form-control search-control"
-              placeholder="Search tasks..."
-              value={searchTask}
-              onChange={(e) => setSearchTask(e.target.value)}
-            />
-
-            <div className="filter-shell">
-              <TaskFilter onFilterChange={handleFilterChange} />
+              <button
+                className="btn btn-primary btn-sm add-task-inline-btn"
+                onClick={() => setShowForm(true)}
+              >
+                Add Task
+              </button>
             </div>
 
             <div className="task-scroll-area">
@@ -245,20 +335,31 @@ export function Dashboard() {
                 </div>
 
                 <div className="progress-display">
-                  <div className="progress-circle">
-                    <strong>{completionPercentage}%</strong>
-                    <span>complete</span>
+                  <div
+                    className="progress-pie"
+                    style={{
+                      background: `conic-gradient(
+                        #198754 0deg ${(completedTasks / Math.max(tasks.length, 1)) * 360}deg,
+                        #fd7e14 ${(completedTasks / Math.max(tasks.length, 1)) * 360}deg ${((completedTasks + inProgressTasks) / Math.max(tasks.length, 1)) * 360}deg,
+                        #6c757d ${((completedTasks + inProgressTasks) / Math.max(tasks.length, 1)) * 360}deg 360deg
+                      )`,
+                    }}
+                  >
+                    {/* <div className="progress-pie-center">
+                      <strong>{completionPercentage}%</strong>
+                      <span>complete</span>
+                    </div> */}
                   </div>
 
                   <div className="progress-list">
-                    <p><span className="status-dot completed" /> Completed: {completedTasks}</p>
-                    <p><span className="status-dot progress" /> In progress: {inProgressTasks}</p>
-                    <p><span className="status-dot pending" /> Pending: {pendingTasks}</p>
+                    <p><span className="status-dot completed" /> Completed: {completedPercentage}%</p>
+                    <p><span className="status-dot progress" /> In progress: {inProgressPercentage}%</p>
+                    <p><span className="status-dot pending" /> Pending: {pendingPercentage}%</p>
                   </div>
                 </div>
               </article>
 
-              <article className="card-clean priority-card">
+              <article className="card-clean priority-card hover-summary-card">
                 <div className="section-title-row compact">
                   <div>
                     <p className="section-kicker">Focus</p>
@@ -273,10 +374,82 @@ export function Dashboard() {
                     <div style={{ width: `${tasks.length ? (highPriorityTasks / tasks.length) * 100 : 0}%` }} />
                   </div>
                 </div>
+
+                <div className="summary-hover-preview right-preview">
+                  <strong>High Priority Tasks</strong>
+                  {tasks.filter((task) => task.priority === "high").length === 0 ? (
+                    <p>No high priority tasks.</p>
+                  ) : (
+                    tasks
+                      .filter((task) => task.priority === "high")
+                      .slice(0, 4)
+                      .map((task) => (
+                        <p key={task.id}>
+                          {task.title} — {task.status}
+                        </p>
+                      ))
+                  )}
+                </div>
               </article>
             </div>
+            <article className="card-clean upcoming-card">
+              <div className="section-title-row compact">
+                <div>
+                  <p className="section-kicker">Up next</p>
+                  <h2>Upcoming Due</h2>
+                </div>
+
+                {daysUntilDue !== null && (
+                  <span className="section-pill">
+                    {daysUntilDue === 0
+                      ? "Due today"
+                      : `${daysUntilDue} day${daysUntilDue === 1 ? "" : "s"}`}
+                  </span>
+                )}
+              </div>
+
+              {nextDueTasks.length === 0 ? (
+                <p className="empty-state">No upcoming tasks.</p>
+              ) : (
+                <div className="upcoming-list">
+                  {nextDueTasks.map((task) => (
+                    <div key={task.id} className="upcoming-item">
+                      <strong>{task.title}</strong>
+                      {task.description && <p>{task.description}</p>}
+                      <span>
+                        Due {new Date(task.dueDate).toLocaleDateString()} · {task.priority}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </article>
           </section>
         </div>
+        {showForm && (
+          <div className="task-modal-backdrop">
+            <div className="task-modal-card">
+              <div className="task-modal-header">
+                <div>
+                  <p className="section-kicker">New task</p>
+                  <h2>Add Task</h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={() => setShowForm(false)}
+                />
+              </div>
+
+              <TaskForm
+                onAddTask={addTask}
+                onClose={() => setShowForm(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
