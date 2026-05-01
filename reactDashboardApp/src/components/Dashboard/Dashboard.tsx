@@ -117,18 +117,18 @@ export function Dashboard() {
     setShowForm(false);
   };
 
- const handleDelete = (id: string) => {
-  setTasks((prevTasks) => {
-    const updatedTasks = prevTasks
-      .filter((task) => task.id !== id)
-      .map((task, index) => ({
-        ...task,
-        id: String(index + 1),
-      }));
+  const handleDelete = (id: string) => {
+    setTasks((prevTasks) => {
+      const updatedTasks = prevTasks
+        .filter((task) => task.id !== id)
+        .map((task, index) => ({
+          ...task,
+          id: String(index + 1),
+        }));
 
-    return updatedTasks;
-  });
-};
+      return updatedTasks;
+    });
+  };
 
   const handleStatusChange = (id: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
@@ -287,22 +287,20 @@ export function Dashboard() {
 
               <span className="section-pill">{filteredTasks.length}</span>
             </div>
-            <div className="input-group search-group">
-              <span className="input-group-text">
-                <i className="bi bi-search"></i>
-              </span>
 
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search tasks..."
-                value={searchTask}
-                onChange={(e) => setSearchTask(e.target.value)}
-              />
-            </div>
-            <div className="task-actions-row">
-              <div className="filter-shell">
-                <TaskFilter onFilterChange={handleFilterChange} />
+            <div className="task-controls-stack">
+              <div className="input-group search-group">
+                <span className="input-group-text">
+                  <i className="bi bi-search"></i>
+                </span>
+
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search tasks..."
+                  value={searchTask}
+                  onChange={(e) => setSearchTask(e.target.value)}
+                />
               </div>
 
               <button
@@ -311,6 +309,8 @@ export function Dashboard() {
               >
                 Add Task
               </button>
+
+              <TaskFilter onFilterChange={handleFilterChange} />
             </div>
 
             <div className="task-scroll-area">

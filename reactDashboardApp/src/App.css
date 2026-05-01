@@ -334,27 +334,62 @@
 .task-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(15, 23, 42, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
   z-index: 9999;
 }
 
 .task-modal-card {
   width: 100%;
   max-width: 520px;
-  background: white;
-  border-radius: 18px;
-  padding: 1.5rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.35);
+  overflow: hidden;
 }
 
 .task-modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: #f9fafb;
+}
+
+.task-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.task-modal-card form {
+  padding: 1.5rem;
+}
+
+.task-modal-card .form-control,
+.task-modal-card .form-select {
+  border-radius: 10px;
+}
+
+.task-modal-card button[type="submit"] {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.task-modal-card .form-control,
+.task-modal-card .form-select,
+.task-modal-card textarea {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  width: 100%;
 }
 
 .hover-summary-card {
