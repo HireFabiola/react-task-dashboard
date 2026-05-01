@@ -222,7 +222,7 @@ export function Dashboard() {
           <div>
             <p className="section-kicker">Workspace overview</p>
             <h1>Task Dashboard</h1>
-            <p>Plan work, monitor progress, and review due dates from one clean view.</p>
+            <p>Plan work, monitor progress, and review due dates from one clean view</p>
           </div>
         </header>
 
