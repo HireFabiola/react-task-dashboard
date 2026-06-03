@@ -173,9 +173,9 @@ export function Dashboard() {
     return task.status !== "completed" && dueDate < today;
   }).length;
 
-  const completionPercentage = tasks.length
-    ? Math.round((completedTasks / tasks.length) * 100)
-    : 0;
+  // const completionPercentage = tasks.length
+  //   ? Math.round((completedTasks / tasks.length) * 100)
+  //   : 0;
 
   const completedPercentage = tasks.length
     ? Math.round((completedTasks / tasks.length) * 100)

@@ -1,14 +1,16 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { TaskFormProps, NewTask } from "../../types";
+import type { TaskFormProps } from "../../types";
+import type { TaskStatus } from "../../types/index";
+
 
 export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
-  const [formData, setFormData] = useState<NewTask>({
-    title: "",
-    description: "",
-    status: "",
-    priority: "",
-    dueDate: "",
-  });
+ const [formData, setFormData] = useState({
+  title: "",
+  description: "",
+  status: "pending" as TaskStatus,
+  priority: "medium" as "low" | "medium" | "high",
+  dueDate: "",
+});
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
