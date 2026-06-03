@@ -7,8 +7,8 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
  const [formData, setFormData] = useState({
   title: "",
   description: "",
-  status: "pending" as TaskStatus,
-  priority: "medium" as "low" | "medium" | "high",
+  status: "" as TaskStatus | "",
+  priority: "" as "low" | "medium" | "high" | "",
   dueDate: "",
 });
 
@@ -57,16 +57,13 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
       </div>
 
       <div className="mb-3">
-        <label className="form-label"></label>
         <select
           name="status"
           value={formData.status}
           onChange={handleChange}
           required
         >
-          <option value="" disabled>
-            Select status
-          </option>
+          <option value="">Select status</option>
           <option value="pending">Pending</option>
           <option value="in-progress">In Progress</option>
           <option value="completed">Completed</option>
@@ -74,16 +71,13 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
       </div>
 
       <div className="mb-3">
-        <label className="form-label"/>
         <select
           name="priority"
           value={formData.priority}
           onChange={handleChange}
           required
         >
-          <option value="" disabled>
-            Select priority
-          </option>
+          <option value="">Select priority</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
@@ -93,7 +87,7 @@ export function TaskForm({ onAddTask, onClose }: TaskFormProps) {
       <div className="mb-3">
         <label className="form-label">Due Date</label>
         <input
-          className="form-control"
+          className="form-control date-input-field"
           type="date"
           name="dueDate"
           value={formData.dueDate}

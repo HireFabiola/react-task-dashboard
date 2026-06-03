@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import tasksData from "../../data/tasks.json";
@@ -32,9 +32,32 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
 
   const selectedTasks = tasks.filter((task) => task.dueDate === selectedDateKey);
 
+  const handlePreviousMonth = () => {
+    setActiveStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() - 1);
+      return newDate;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setActiveStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + 1);
+      return newDate;
+    });
+  };
+
   return (
     <section className="card-clean calendar-section">
       <div className="section-title-row">
+        <button
+          className="btn btn-sm btn-outline-secondary"
+          onClick={handlePreviousMonth}
+          aria-label="Previous month"
+        >
+          <i className="bi bi-chevron-left"></i>
+        </button>
         <div>
           <p className="section-kicker">Schedule</p>
           <h2>
@@ -44,7 +67,16 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
             })}
           </h2>
         </div>
-        <span className="section-pill">{selectedTasks.length} due</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span className="section-pill">{selectedTasks.length} due</span>
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            onClick={handleNextMonth}
+            aria-label="Next month"
+          >
+            <i className="bi bi-chevron-right"></i>
+          </button>
+        </div>
       </div>
 
       <div className="calendar-grid">
@@ -97,10 +129,17 @@ function CalendarSection({ tasks }: { tasks: Task[] }) {
 }
 
 export function Dashboard() {
-  const [tasks, setTasks] = useState<Task[]>(tasksData as Task[]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : (tasksData as Task[]);
+  });
   const [filters, setFilters] = useState<Filters>({});
   const [showForm, setShowForm] = useState(false);
   const [searchTask, setSearchTask] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = (newTask: Omit<Task, "id">) => {
     const highestTaskNumber = tasks.reduce((highest, task) => {
@@ -231,13 +270,45 @@ export function Dashboard() {
             <span>Total Tasks</span>
             <strong>{tasks.length}</strong>
           </article>
-          <article className="metric-card">
+          <article className="metric-card hover-summary-card">
             <span>Completed</span>
             <strong>{completedTasks}</strong>
+
+            <div className="summary-hover-preview">
+              <strong>Completed Tasks</strong>
+              {tasks.filter((task) => task.status === "completed").length === 0 ? (
+                <p>No completed tasks.</p>
+              ) : (
+                tasks
+                  .filter((task) => task.status === "completed")
+                  .slice(0, 4)
+                  .map((task) => (
+                    <p key={task.id}>
+                      {task.title} — due {new Date(task.dueDate).toLocaleDateString()}
+                    </p>
+                  ))
+              )}
+            </div>
           </article>
-          <article className="metric-card">
+          <article className="metric-card hover-summary-card">
             <span>In Progress</span>
             <strong>{inProgressTasks}</strong>
+
+            <div className="summary-hover-preview">
+              <strong>In Progress Tasks</strong>
+              {tasks.filter((task) => task.status === "in-progress").length === 0 ? (
+                <p>No in-progress tasks.</p>
+              ) : (
+                tasks
+                  .filter((task) => task.status === "in-progress")
+                  .slice(0, 4)
+                  .map((task) => (
+                    <p key={task.id}>
+                      {task.title} — due {new Date(task.dueDate).toLocaleDateString()}
+                    </p>
+                  ))
+              )}
+            </div>
           </article>
           <article className="metric-card danger-metric hover-summary-card">
             <span>Overdue</span>
