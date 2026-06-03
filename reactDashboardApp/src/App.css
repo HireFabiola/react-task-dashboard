@@ -446,7 +446,7 @@
   color: var(--muted);
 }
 
-.search-group .input-group-text {
+..search-group .input-group-text {
   background: white;
   border-right: none;
   color: var(--muted);
@@ -455,6 +455,7 @@
 .search-group .form-control {
   border-left: none;
   background: white;
+  color: #000;
 }
 
 .upcoming-card {
